@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { getHotels } from '../api/hotels';
+import SearchFiltersModal from './SearchFiltersModal';
 import '../styles/hotellist.css';
 
 export default function HotelList() {
@@ -14,6 +15,8 @@ export default function HotelList() {
   const [maxPrice, setMaxPrice] = useState('');
   const [minRating, setMinRating] = useState('');
   const [sortBy, setSortBy] = useState('rating');
+  
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   useEffect(() => {
     loadHotels();
@@ -64,7 +67,7 @@ export default function HotelList() {
     } else if (sortBy === 'price-low') {
       result.sort((a, b) => a.price - b.price);
     } else if (sortBy === 'price-high') {
-      result.sort((a, b) => b.price - a.price);
+      result.sort((a, b) => b.price - b.price);
     }
 
     setFilteredHotels(result);
@@ -90,64 +93,37 @@ export default function HotelList() {
     <div className="hotel-list">
       <h1>Available Hotels</h1>
       
-      <div className="filters-panel">
-        <div className="filter-group">
-          <label>🔍 Search</label>
-          <input
-            type="text"
-            placeholder="City or hotel name..."
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-          />
-        </div>
-
-        <div className="filter-group">
-          <label>💰 Min Price</label>
-          <input
-            type="number"
-            placeholder="$0"
-            value={minPrice}
-            onChange={(e) => setMinPrice(e.target.value)}
-          />
-        </div>
-
-        <div className="filter-group">
-          <label>💰 Max Price</label>
-          <input
-            type="number"
-            placeholder="$500"
-            value={maxPrice}
-            onChange={(e) => setMaxPrice(e.target.value)}
-          />
-        </div>
-
-        <div className="filter-group">
-          <label>⭐ Min Rating</label>
-          <select value={minRating} onChange={(e) => setMinRating(e.target.value)}>
-            <option value="">Any</option>
-            <option value="3">3+ Stars</option>
-            <option value="4">4+ Stars</option>
-            <option value="4.5">4.5+ Stars</option>
-          </select>
-        </div>
-
-        <div className="filter-group">
-          <label>📊 Sort By</label>
-          <select value={sortBy} onChange={(e) => setSortBy(e.target.value)}>
-            <option value="rating">Rating</option>
-            <option value="price-low">Price: Low to High</option>
-            <option value="price-high">Price: High to Low</option>
-          </select>
-        </div>
-
-        <button className="btn-reset" onClick={resetFilters}>
-          🔄 Reset
+      <div className="filters-bar">
+        <button className="btn-filters" onClick={() => setIsModalOpen(true)}>
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+            <polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"></polygon>
+          </svg>
+          <span>Фильтры</span>
+          {(searchQuery || minPrice || maxPrice || minRating) && (
+            <span className="filter-badge">●</span>
+          )}
         </button>
+        
+        <span className="results-count">
+          Found {filteredHotels.length} hotel{filteredHotels.length !== 1 ? 's' : ''}
+        </span>
       </div>
 
-      <p className="results-count">
-        Found {filteredHotels.length} hotel{filteredHotels.length !== 1 ? 's' : ''}
-      </p>
+      <SearchFiltersModal
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        searchQuery={searchQuery}
+        setSearchQuery={setSearchQuery}
+        minPrice={minPrice}
+        setMinPrice={setMinPrice}
+        maxPrice={maxPrice}
+        setMaxPrice={setMaxPrice}
+        minRating={minRating}
+        setMinRating={setMinRating}
+        sortBy={sortBy}
+        setSortBy={setSortBy}
+        resetFilters={resetFilters}
+      />
       
       <div className="hotels-grid">
         {filteredHotels.map(hotel => (
