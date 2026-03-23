@@ -9,5 +9,15 @@
         "esModuleInterop": true,
         "forceConsistentCasingInFileNames": true,
         "skipDefaultLibCheck": true
-    }
+    },
+    "include": ["src/**/*"],
+    "exclude": [
+        "node_modules",
+        "dist",
+        "**/*.test.ts",
+        "**/*.spec.ts",
+        ".env",
+        ".env.local",
+        ".env.production"
+    ]
 }
