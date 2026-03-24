@@ -1,20 +1,15 @@
-router.get('/my', authenticateToken, async (req, res) => {
-  try {
-    const bookings = await prisma.booking.findMany({
-      where: { userId: req.user.id },
-      include: {
-        room: {
-          include: {
-            hotel: true
-          }
-        }
-      },
-      orderBy: { createdAt: 'desc' }
-    });
-    
-    res.json(bookings);
-  } catch (error) {
-    console.error('Get bookings error:', error);
-    res.status(500).json({ error: 'Failed to fetch bookings' });
-  }
-});
+import express from 'express';
+import bookingController from '../controllers/booking.controller.js';
+import { authenticateToken } from '../middleware/auth.middleware.js';
+
+const router = express.Router();
+
+router.get('/my', authenticateToken, (req, res) => bookingController.getMyBookings(req, res));
+
+router.get('/:id', authenticateToken, (req, res) => bookingController.getBookingById(req, res));
+
+router.post('/', authenticateToken, (req, res) => bookingController.createBooking(req, res));
+
+router.delete('/:id', authenticateToken, (req, res) => bookingController.cancelBooking(req, res));
+
+export default router;

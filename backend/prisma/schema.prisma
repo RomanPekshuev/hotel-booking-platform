@@ -18,6 +18,7 @@ model User {
   username  String    @unique
   email     String    @unique
   password  String
+  role      String    @default("user")
   bookings  Booking[] // Бронирования пользователя
   reviews   Review[]  // Отзывы пользователя
   createdAt DateTime  @default(now())
@@ -56,6 +57,7 @@ model Booking {
   room      Room     @relation(fields: [roomId], references: [id])
   checkIn   DateTime // Дата заезда
   checkOut  DateTime // Дата выезда
+  guests    Int      @default(1)
   status    String   @default("pending") // pending, confirmed, cancelled
   createdAt DateTime @default(now())
 }
