@@ -20,33 +20,48 @@ model User {
   password  String
   role      String    @default("user")
   bookings  Booking[] // Бронирования пользователя
-  reviews   Review[]  // Отзывы пользователя
+  reviews   Review[] // Отзывы пользователя
+  sessions  Session[]
+  messages  Message[]
   createdAt DateTime  @default(now())
 }
 
+model Session {
+  id           Int      @id @default(autoincrement())
+  userId       Int
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  refreshToken String   @unique
+  userAgent    String?
+  ipAddress    String?
+  createdAt    DateTime @default(now())
+  expiresAt    DateTime
+
+  @@index([userId])
+}
+
 model Hotel {
-  id          Int       @id @default(autoincrement())
+  id          Int      @id @default(autoincrement())
   name        String
   description String
-  location    String    // Город/Адрес
-  rating      Float     @default(0)
-  image       String    // URL главного фото
-  price       Float     @default(100)
-  rooms       Room[]    // Номера отеля
-  reviews     Review[]  // Отзывы об отеле
-  createdAt   DateTime  @default(now())
+  location    String // Город/Адрес
+  rating      Float    @default(0)
+  image       String // URL главного фото
+  price       Float    @default(100)
+  rooms       Room[] // Номера отеля
+  reviews     Review[] // Отзывы об отеле
+  createdAt   DateTime @default(now())
 }
 
 model Room {
-  id          Int       @id @default(autoincrement())
-  hotelId     Int
-  hotel       Hotel     @relation(fields: [hotelId], references: [id])
-  type        String    // Люкс, Стандарт и т.д.
-  price       Float     // Цена за ночь
-  capacity    Int       // Макс. кол-во гостей
-  available   Boolean   @default(true)
-  bookings    Booking[]
-  createdAt   DateTime  @default(now())
+  id        Int       @id @default(autoincrement())
+  hotelId   Int
+  hotel     Hotel     @relation(fields: [hotelId], references: [id])
+  type      String // Люкс, Стандарт и т.д.
+  price     Float // Цена за ночь
+  capacity  Int // Макс. кол-во гостей
+  available Boolean   @default(true)
+  bookings  Booking[]
+  createdAt DateTime  @default(now())
 }
 
 model Booking {
@@ -68,7 +83,20 @@ model Review {
   user      User     @relation(fields: [userId], references: [id])
   hotelId   Int
   hotel     Hotel    @relation(fields: [hotelId], references: [id])
-  rating    Int      // 1-5
+  rating    Int // 1-5
   comment   String
   createdAt DateTime @default(now())
+}
+
+model Message {
+  id        Int      @id @default(autoincrement())
+  userId    Int
+  user      User     @relation(fields: [userId], references: [id])
+  room      String   @default("public")
+  content   String
+  isSupport Boolean  @default(false) // true = от поддержки, false = от пользователя
+  createdAt DateTime @default(now())
+
+  @@index([userId])
+  @@index([room])
 }

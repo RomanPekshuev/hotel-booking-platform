@@ -51,7 +51,7 @@ export default function SearchFiltersModal({
 
             <div className="filter-row">
               <div className="filter-group">
-                <label>💰 Мин. цена</label>
+                <label>Мин. цена</label>
                 <input
                   type="number"
                   placeholder="$0"
@@ -61,7 +61,7 @@ export default function SearchFiltersModal({
               </div>
 
               <div className="filter-group">
-                <label>💰 Макс. цена</label>
+                <label>Макс. цена</label>
                 <input
                   type="number"
                   placeholder="$500"
@@ -72,7 +72,7 @@ export default function SearchFiltersModal({
             </div>
 
             <div className="filter-group">
-              <label>⭐ Мин. рейтинг</label>
+              <label>Мин. рейтинг</label>
               <select
                 value={minRating}
                 onChange={(e) => setMinRating(e.target.value)}
@@ -85,14 +85,14 @@ export default function SearchFiltersModal({
             </div>
 
             <div className="filter-group">
-              <label>📊 Сортировать по</label>
+              <label>Сортировать по</label>
               <select
                 value={sortBy}
                 onChange={(e) => setSortBy(e.target.value)}
               >
-                <option value="rating">Рейтингу ⭐</option>
-                <option value="price-low">Цене (возрастание) 💰</option>
-                <option value="price-high">Цене (убывание) 💰💰</option>
+                <option value="rating">Рейтингу</option>
+                <option value="price-low">Цене (возрастание)</option>
+                <option value="price-high">Цене (убывание)</option>
               </select>
             </div>
 

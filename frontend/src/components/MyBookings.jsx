@@ -28,7 +28,7 @@ export default function MyBookings() {
     if (confirm('Are you sure you want to cancel this booking?')) {
       try {
         await cancelBooking(bookingId);
-        loadBookings(); // Reload bookings
+        loadBookings();
       } catch (err) {
         alert('Failed to cancel booking');
       }

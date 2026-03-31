@@ -65,7 +65,8 @@ export class BookingController {
           roomId,
           checkIn: new Date(checkIn),
           checkOut: new Date(checkOut),
-          guests
+          guests: guests || 1,
+          status: 'pending'
         },
         include: {
           room: {

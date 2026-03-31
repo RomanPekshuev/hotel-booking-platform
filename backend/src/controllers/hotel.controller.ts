@@ -1,18 +1,10 @@
 import { Request, Response } from 'express';
-import searchService from '../services/search.service';
+import searchService from '../services/search.service.js';
 
 export class HotelController {
-  
   async getHotels(req: Request, res: Response) {
     try {
-      const { 
-        query, 
-        minPrice, 
-        maxPrice, 
-        minRating, 
-        sortBy,
-        location 
-      } = req.query;
+      const { query, minPrice, maxPrice, minRating, sortBy, location } = req.query;
 
       const filters = {
         query: query as string,
@@ -24,15 +16,10 @@ export class HotelController {
       };
 
       const hotels = await searchService.searchHotels(filters);
-
       res.json(hotels);
-      
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error in getHotels:', error);
-      res.status(500).json({ 
-        error: 'Failed to fetch hotels',
-        message: error instanceof Error ? error.message : 'Unknown error'
-      });
+      res.status(500).json({ error: 'Failed to fetch hotels' });
     }
   }
 
@@ -47,13 +34,9 @@ export class HotelController {
       }
 
       res.json(hotel);
-      
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error in getHotelById:', error);
-      res.status(500).json({ 
-        error: 'Failed to fetch hotel',
-        message: error instanceof Error ? error.message : 'Unknown error'
-      });
+      res.status(500).json({ error: 'Failed to fetch hotel' });
     }
   }
 
@@ -61,11 +44,9 @@ export class HotelController {
     try {
       const hotels = await searchService.getAllHotels();
       res.json(hotels);
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error in getAllHotels:', error);
-      res.status(500).json({ 
-        error: 'Failed to fetch hotels' 
-      });
+      res.status(500).json({ error: 'Failed to fetch hotels' });
     }
   }
 }

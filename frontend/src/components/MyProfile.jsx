@@ -89,7 +89,7 @@ export default function MyProfile() {
           <p className="profile-member">Member since {formatDate(user?.createdAt)}</p>
         </div>
         <button className="btn-logout" onClick={handleLogout}>
-          🚪 Sign Out
+          Sign Out
         </button>
       </div>
 
@@ -98,13 +98,13 @@ export default function MyProfile() {
           className={`tab-btn ${activeTab === 'bookings' ? 'active' : ''}`}
           onClick={() => setActiveTab('bookings')}
         >
-          📋 My Bookings ({bookings.length})
+          My Bookings ({bookings.length})
         </button>
         <button 
           className={`tab-btn ${activeTab === 'info' ? 'active' : ''}`}
           onClick={() => setActiveTab('info')}
         >
-          👤 Account Info
+          Account Info
         </button>
       </div>
 
@@ -114,7 +114,7 @@ export default function MyProfile() {
           <div className="bookings-list">
             {bookings.length === 0 ? (
               <div className="empty-bookings">
-                <p>😔 No bookings yet</p>
+                <p>No bookings yet</p>
                 <Link to="/" className="btn">Browse Hotels</Link>
               </div>
             ) : (
@@ -127,19 +127,19 @@ export default function MyProfile() {
                   
                   <div className="booking-details">
                     <div className="detail-row">
-                      <span>🏨 Room:</span>
+                      <span>Room:</span>
                       <strong>{booking.room?.type || 'Standard'}</strong>
                     </div>
                     <div className="detail-row">
-                      <span>📅 Check-in:</span>
+                      <span>Check-in:</span>
                       <strong>{formatDate(booking.checkIn)}</strong>
                     </div>
                     <div className="detail-row">
-                      <span>📅 Check-out:</span>
+                      <span>Check-out:</span>
                       <strong>{formatDate(booking.checkOut)}</strong>
                     </div>
                     <div className="detail-row">
-                      <span>💰 Price:</span>
+                      <span>Price:</span>
                       <strong>${booking.room?.price || 0}/night</strong>
                     </div>
                   </div>
@@ -178,7 +178,7 @@ export default function MyProfile() {
             </div>
 
             <div className="info-card security">
-              <h3>🔐 Security</h3>
+              <h3>Security</h3>
               <p>Change your password regularly to keep your account secure.</p>
               <button className="btn-secondary">Change Password</button>
             </div>

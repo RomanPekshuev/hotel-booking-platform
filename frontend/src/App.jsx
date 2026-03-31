@@ -4,9 +4,10 @@ import LoginForm from './components/LoginForm';
 import HotelList from './components/HotelList';
 import HotelDetails from './components/HotelDetails';
 import MyBookings from './components/MyBookings';
+import MyProfile from './components/MyProfile';
+import ChatWidget from './components/ChatWidget';
 import { useState, useEffect } from 'react';
 import { isAuthenticated, logout } from './api/auth';
-import MyProfile from './components/MyProfile';
 
 function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -36,7 +37,7 @@ function App() {
       <nav className={scrolled ? 'scrolled' : ''}>
         <div>
           <div style={{ display: 'flex', gap: '20px', alignItems: 'center' }}>
-            <Link to="/" style={{ textDecoration: 'none', fontWeight: 'bold' }}>🏨 Hotels</Link>
+            <Link to="/" style={{ textDecoration: 'none', fontWeight: 'bold' }}>Hotels</Link>
             
             {!isLoggedIn && (
               <>
@@ -51,7 +52,7 @@ function App() {
 
             {isLoggedIn && (
               <>
-                <Link to="/profile" style={{ textDecoration: 'none' }}>👤 Profile</Link>
+                <Link to="/profile" style={{ textDecoration: 'none' }}>Profile</Link>
                 <Link to="/bookings" style={{ textDecoration: 'none' }}>My reservations</Link>
               </>
             )}
@@ -84,6 +85,8 @@ function App() {
         <Route path="/bookings" element={<MyBookings />} />
         <Route path="/profile" element={<MyProfile />} />
       </Routes>
+      
+      <ChatWidget />
     </Router>
   );
 }

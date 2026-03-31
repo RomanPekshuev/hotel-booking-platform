@@ -1,4 +1,4 @@
-const API_URL = 'http://localhost:3000/api';
+const API_URL = '';
 
 export const getHotels = async () => {
   try {
@@ -39,7 +39,7 @@ export const getHotelRooms = async (hotelId, checkIn, checkOut) => {
 
 export const createBooking = async (bookingData) => {
   try {
-    const token = localStorage.getItem('token');
+    const token = localStorage.getItem('accessToken');
     const response = await fetch(`${API_URL}/bookings`, {
       method: 'POST',
       headers: {
@@ -58,7 +58,7 @@ export const createBooking = async (bookingData) => {
 
 export const getMyBookings = async () => {
   try {
-    const token = localStorage.getItem('token');
+    const token = localStorage.getItem('accessToken');
     const response = await fetch(`${API_URL}/bookings/my`, {
       headers: {
         'Authorization': `Bearer ${token}`
@@ -74,7 +74,7 @@ export const getMyBookings = async () => {
 
 export const cancelBooking = async (bookingId) => {
   try {
-    const token = localStorage.getItem('token');
+    const token = localStorage.getItem('accessToken');
     const response = await fetch(`${API_URL}/bookings/${bookingId}`, {
       method: 'DELETE',
       headers: {
