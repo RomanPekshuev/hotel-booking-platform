@@ -5,27 +5,56 @@ export default function ChatWidget() {
   const [isOpen, setIsOpen] = useState(false);
   const [input, setInput] = useState('');
   
-  // Получаем токен из localStorage
-  const token = typeof window !== 'undefined' ? localStorage.getItem('accessToken') : null;
+  // Получаем токен из localStorage (проверяем все возможные ключи)
+  const token = typeof window !== 'undefined' 
+    ? localStorage.getItem('accessToken')
+    || localStorage.getItem('token')
+    || localStorage.getItem('authToken')
+    : null;
   
-  // Подключаемся к WebSocket
-  const { status, messages, sendMessage } = useChatSocket(
-    'http://localhost:3000',  // ← Для телефона замените на IP
-    token
-  );
+  // ← ВАЖНО: передаём только backendUrl (как требует useChatSocket из референса)
+  const { status, error, messages, connect, disconnect, sendMessage } = useChatSocket('http://localhost:3000');
   
   const messagesEndRef = useRef(null);
+  const hasConnectedRef = useRef(false);
 
   // Авто-скролл к последнему сообщению
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages]);
 
+  // ← ВАЖНО: вручную подключаемся при наличии токена
+  useEffect(() => {
+    if (token && !hasConnectedRef.current) {
+      console.log('🔌 Подключаемся к чату...');
+      connect({ 
+        room: 'public', 
+        nickname: 'user'  // или можно получить username из токена/профиля
+      });
+      hasConnectedRef.current = true;
+    }
+    
+    return () => {
+      disconnect();
+      hasConnectedRef.current = false;
+    };
+  }, [token, connect, disconnect]);
+
   const handleSend = (e) => {
     e.preventDefault();
+    console.log('🔵 Клик по отправке!');
+    console.log('📝 Текст:', input);
+    console.log('📡 Статус:', status);
+    console.log('🔑 Токен:', token ? 'есть' : 'нет');
+
     if (input.trim() && status === 'connected') {
       sendMessage(input);
       setInput('');
+      console.log('✅ Отправлено');
+    } else if (!token) {
+      console.log('❌ Нет токена — не авторизован');
+    } else if (status !== 'connected') {
+      console.log('❌ Статус не connected:', status);
     }
   };
 
@@ -96,6 +125,7 @@ export default function ChatWidget() {
               <div style={{ fontWeight: 'bold', fontSize: '16px' }}>Поддержка</div>
               <div style={{ fontSize: '12px', opacity: 0.9 }}>
                 {getStatusColor()} {getStatusText()}
+                {error && <span style={{color: '#fecaca'}}> — {error}</span>}
               </div>
             </div>
             <button 
@@ -176,7 +206,7 @@ export default function ChatWidget() {
               value={input}
               onChange={(e) => setInput(e.target.value)}
               placeholder="Введите сообщение..."
-              disabled={false}
+              disabled={status !== 'connected'}
               style={{
                 flex: 1,
                 padding: '8px 12px',

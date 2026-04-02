@@ -14,7 +14,7 @@ function isSystemMessage(message: ChatMessage): message is ChatMessage & { kind:
   return message.kind === 'system'
 }
 
-export function useChatSocket(backendUrl: string) {
+export function useChatSocket(backendUrl: string, token: string | null) {
   const socketRef = useRef<Socket | null>(null)
   const activeRoomRef = useRef<ChatRoomName | null>(null)
 
@@ -45,6 +45,7 @@ export function useChatSocket(backendUrl: string) {
       const socket = io(backendUrl, {
         autoConnect: false,
         transports: ['websocket'],
+        auth: { token },
       })
 
       socketRef.current = socket
