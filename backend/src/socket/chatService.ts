@@ -17,6 +17,7 @@ export function addUserMessage(params: {
   room: ChatRoomName
   nickname: ChatNickname
   text: string
+  author?: string
 }): ChatMessage {
   const text = normalizeText(params.text)
   if (!text) {
@@ -30,7 +31,7 @@ export function addUserMessage(params: {
     kind: 'user',
     id: randomUUID(),
     room: params.room,
-    author: params.nickname,
+    author: params.author ?? params.nickname,
     text,
     createdAt: Date.now(),
   }

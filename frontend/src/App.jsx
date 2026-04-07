@@ -8,6 +8,7 @@ import MyProfile from './components/MyProfile';
 import ChatWidget from './components/ChatWidget';
 import { useState, useEffect } from 'react';
 import { isAuthenticated, logout } from './api/auth';
+import AdminChatPanel from './components/AdminChatPanel';
 
 function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -84,6 +85,7 @@ function App() {
         <Route path="/login" element={<LoginForm />} />
         <Route path="/bookings" element={<MyBookings />} />
         <Route path="/profile" element={<MyProfile />} />
+        <Route path="/admin/support" element={<AdminChatPanel />} />
       </Routes>
       
       <ChatWidget />

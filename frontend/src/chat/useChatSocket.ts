@@ -84,7 +84,7 @@ export function useChatSocket(backendUrl: string, token: string | null) {
 
       socket.connect()
     },
-    [backendUrl, disconnect],
+    [backendUrl, token, disconnect],
   )
 
   const sendMessage = useCallback(
@@ -108,8 +108,13 @@ export function useChatSocket(backendUrl: string, token: string | null) {
   )
 
   useEffect(() => {
+    if (token) {
+      console.log('Авто-подключение к чату...')
+      connect ({ room: 'public', nickname: 'user' })
+    }
+
     return () => disconnect()
-  }, [disconnect])
+  }, [token, connect, disconnect])
 
   return {
     status,

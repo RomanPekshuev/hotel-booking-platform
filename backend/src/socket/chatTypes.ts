@@ -47,6 +47,8 @@ export type ChatSendAck = ChatSendAckOk | ChatSendAckError
 export interface SocketChatData {
   room?: ChatRoomName
   nickname?: ChatNickname
+  userId?: number
+  isAdmin?: boolean 
 }
 
 export const DEFAULT_ROOM = 'public'

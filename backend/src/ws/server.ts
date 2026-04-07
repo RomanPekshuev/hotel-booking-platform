@@ -23,7 +23,7 @@ const io = new Server(httpServer, {
 });
 
 // ← 7. MIDDLEWARE: авторизация сокетов (будем создавать)
-io.use(authenticateSocket);
+// io.use(authenticateSocket);
 
 // ← 8. РЕГИСТРИРУЕМ обработчики чата
 registerChatHandlers(io);

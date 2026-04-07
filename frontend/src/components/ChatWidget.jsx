@@ -206,7 +206,7 @@ export default function ChatWidget() {
               value={input}
               onChange={(e) => setInput(e.target.value)}
               placeholder="Введите сообщение..."
-              disabled={status !== 'connected'}
+              disabled={false}
               style={{
                 flex: 1,
                 padding: '8px 12px',
@@ -218,7 +218,7 @@ export default function ChatWidget() {
             />
             <button
               type="submit"
-              disabled={status !== 'connected' || !input.trim()}
+              disabled={!input.trim()}
               style={{
                 padding: '8px 16px',
                 backgroundColor: status === 'connected' && input.trim() ? '#2563eb' : '#9ca3af',

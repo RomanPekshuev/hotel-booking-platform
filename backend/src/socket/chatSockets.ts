@@ -83,10 +83,14 @@ export function registerChatHandlers(io: Server) {
             callback({ ok: false, error: 'Сначала выполните join' })
             return
           }
+
+          const author = socketData.isAdmin ? 'support' : socketData.nickname;
+
           const message = addUserMessage({
             room,
             nickname: socketData.nickname,
             text,
+            author,
           })
 
           io.to(room).emit('chat:message', message satisfies ChatMessage)
