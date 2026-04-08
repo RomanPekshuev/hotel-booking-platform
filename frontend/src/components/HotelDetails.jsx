@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { getHotelById } from '../api/hotels';
 import BookingForm from './BoockingForm';
+import ReviewForm from './ReviewForm';
 
 export default function HotelDetails() {
   const { id } = useParams();
@@ -9,10 +10,50 @@ export default function HotelDetails() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [selectedRoom, setSelectedRoom] = useState(null);
+  const [reviews, setReviews] = useState([]);
+  const [avgRating, setAvgRating] = useState(0);
 
   useEffect(() => {
     loadHotel();
   }, [id]);
+
+  useEffect(() => {
+  if (hotel?.id) {
+    loadReviews();
+  }
+}, [hotel?.id]);
+
+async function loadReviews() {
+  try {
+    const response = await fetch(`http://localhost:3000/reviews/hotel/${hotel.id}`);
+    const data = await response.json();
+    setReviews(data.reviews);
+    setAvgRating(data.avgRating);
+  } catch (e) {
+    console.error('Failed to load reviews:', e);
+  }
+}
+
+useEffect(() => {
+  if (hotel?.id) {
+    loadReviews();
+  }
+}, [hotel?.id]);
+
+async function loadReviews() {
+  try {
+    const response = await fetch(`http://localhost:3000/reviews/hotel/${hotel.id}`);
+    const data = await response.json();
+    setReviews(data.reviews);
+    setAvgRating(data.avgRating);
+  } catch (e) {
+    console.error('Failed to load reviews:', e);
+  }
+}
+
+async function handleReviewAdded() {
+  await loadReviews();  // Перезагружаем отзывы после добавления
+}
 
   async function loadHotel() {
     try {
@@ -88,6 +129,54 @@ export default function HotelDetails() {
       ) : (
         <p>No rooms available at the moment.</p>
       )}
+
+      <div style={{ marginTop: '40px', borderTop: '2px solid #e5e7eb', paddingTop: '24px' }}>
+        <h2 style={{ marginBottom: '16px' }}>
+          Отзывы ({reviews.length})
+          {avgRating > 0 && (
+            <span style={{ color: '#fbbf24', marginLeft: '12px' }}>
+              {'★'.repeat(Math.round(avgRating))}
+              <span style={{ color: '#6b7280', fontSize: '16px' }}>
+                {' '}({avgRating.toFixed(1)})
+              </span>
+            </span>
+          )}
+        </h2>
+        
+        <ReviewForm hotelId={hotel.id} onReviewAdded={handleReviewAdded} />
+        
+        <div style={{ marginTop: '24px' }}>
+          {reviews.length === 0 ? (
+            <p style={{ color: '#6b7280' }}>Пока нет отзывов. Будьте первым!</p>
+          ) : (
+            reviews.map((review) => (
+              <div 
+                key={review.id}
+                style={{
+                  padding: '16px',
+                  border: '1px solid #e5e7eb',
+                  borderRadius: '8px',
+                  marginBottom: '12px',
+                  backgroundColor: '#f9fafb'
+                }}
+              >
+                <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px' }}>
+                  <div>
+                    <strong>{review.user?.username || 'Аноним'}</strong>
+                    <span style={{ color: '#fbbf24', marginLeft: '8px' }}>
+                      {'★'.repeat(review.rating)}
+                    </span>
+                  </div>
+                  <span style={{ color: '#6b7280', fontSize: '14px' }}>
+                    {new Date(review.createdAt).toLocaleDateString('ru-RU')}
+                  </span>
+                </div>
+                <p style={{ color: '#374151' }}>{review.comment}</p>
+              </div>
+            ))
+          )}
+        </div>
+      </div>
     </div>
   );
 }

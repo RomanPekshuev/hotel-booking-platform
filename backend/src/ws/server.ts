@@ -7,6 +7,7 @@ import hotelsRouter from "../api/hotels";
 import bookingsRouter from "../api/bookings";
 import { registerChatHandlers } from "../socket/chatSockets";  // ← 3. ИМПОРТ: ваши обработчики чата
 import { authenticateSocket } from "../middleware/socket-auth.middleware";  // ← 4. ИМПОРТ: аутентификация сокетов
+import reviewsRouter from '../api/reviews';
 
 const app = express();
 
@@ -40,6 +41,7 @@ app.use(express.json());
 app.use("/auth", authRouter);
 app.use("/hotels", hotelsRouter);
 app.use("/bookings", bookingsRouter);
+app.use('/reviews', reviewsRouter);
 
 app.get("/", (req, res) => {
     res.json({ status: 'ok!!!!!!'});
