@@ -53,6 +53,7 @@ export function useChatSocket(backendUrl: string, token: string | null) {
       setStatus('connecting')
 
       socket.on('connect', () => {
+        console.log(payload)
         const onJoinAck = (ack: ChatJoinAck) => {
           if (ack.ok) {
             setStatus('connected')
@@ -88,14 +89,14 @@ export function useChatSocket(backendUrl: string, token: string | null) {
   )
 
   const sendMessage = useCallback(
-    (text: string) => {
+    (text: string, isSupport: boolean = false) => {
       const socket = socketRef.current
       const room = activeRoomRef.current
       if (!socket || !room) return
 
       socket.emit(
         'chat:message',
-        { room, text },
+        { room, text, author: isSupport ? 'support' : undefined },
         (ack: ChatSendAck) => {
           if (!ack.ok) {
             setStatus('error')

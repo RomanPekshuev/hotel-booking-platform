@@ -74,6 +74,7 @@ export function registerChatHandlers(io: Server) {
         try {
           const room = payload?.room?.toString?.() ?? ''
           const text = payload?.text?.toString?.() ?? ''
+          const authorOverride = payload?.author
 
           if (!socketData.room || socketData.room !== room) {
             callback({ ok: false, error: 'Нет доступа к этой комнате' })
@@ -84,7 +85,8 @@ export function registerChatHandlers(io: Server) {
             return
           }
 
-          const author = socketData.isAdmin ? 'support' : socketData.nickname;
+          const author = authorOverride || (socketData.isAdmin ? 'support' : socketData.nickname);
+          console.log('[MESSAGE] Итоговый author:', author);
 
           const message = addUserMessage({
             room,

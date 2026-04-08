@@ -13,7 +13,7 @@ export default function AdminChatPanel() {
     e.preventDefault();
     if (input.trim() && status === 'connected') {
       // Отправляем сообщение (бэкенд должен определить что это от support)
-      sendMessage(input);
+      sendMessage(input, true);
       setInput('');
     }
   };

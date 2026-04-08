@@ -31,6 +31,7 @@ export type ChatJoinAck = ChatJoinAckOk | ChatJoinAckError
 export interface ChatSendPayload {
   room: ChatRoomName
   text: string
+  author?: string
 }
 
 export interface ChatSendAckOk {
