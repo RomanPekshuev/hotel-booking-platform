@@ -69,7 +69,7 @@ export function isAuthenticated() {
 }
 
 export function getToken() {
-  return localStorage.getItem('accessToken');
+  return localStorage.getItem('accessToken') || localStorage.getItem('token') || null;
 }
 
 export function getRefreshToken() {

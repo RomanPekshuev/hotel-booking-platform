@@ -1,4 +1,4 @@
-const API_URL = '';
+const API_URL = 'http://localhost:3000';
 
 export const getHotels = async () => {
   try {
@@ -39,7 +39,7 @@ export const getHotelRooms = async (hotelId, checkIn, checkOut) => {
 
 export const createBooking = async (bookingData) => {
   try {
-    const token = localStorage.getItem('accessToken');
+    const token = localStorage.getItem('accessToken') || localStorage.getItem('token');
     const response = await fetch(`${API_URL}/bookings`, {
       method: 'POST',
       headers: {
