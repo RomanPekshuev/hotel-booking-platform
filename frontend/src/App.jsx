@@ -46,10 +46,6 @@ function App() {
                 <Link to="/register" style={{ textDecoration: 'none' }}>Registration</Link>
               </>
             )}
-            
-            {isLoggedIn && (
-              <Link to="/bookings" style={{ textDecoration: 'none' }}>My reservations</Link>
-            )}
 
             {isLoggedIn && (
               <>

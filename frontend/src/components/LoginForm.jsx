@@ -23,7 +23,7 @@ export default function LoginForm() {
       }
       
       const data = await response.json();
-      localStorage.setItem('accesToken', data.token);
+      localStorage.setItem('token', data.token);
       window.location.href = '/';
     } catch (err) {
       setError(err.message || 'Login failed. Please try again.');

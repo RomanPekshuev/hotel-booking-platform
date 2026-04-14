@@ -58,7 +58,7 @@ export const createBooking = async (bookingData) => {
 
 export const getMyBookings = async () => {
   try {
-    const token = localStorage.getItem('accessToken');
+    const token = localStorage.getItem('accessToken') || localStorage.getItem('token');
     const response = await fetch(`${API_URL}/bookings/my`, {
       headers: {
         'Authorization': `Bearer ${token}`
@@ -74,7 +74,7 @@ export const getMyBookings = async () => {
 
 export const cancelBooking = async (bookingId) => {
   try {
-    const token = localStorage.getItem('accessToken');
+    const token = localStorage.getItem('accessToken') || localStorage.getItem('token');
     const response = await fetch(`${API_URL}/bookings/${bookingId}`, {
       method: 'DELETE',
       headers: {

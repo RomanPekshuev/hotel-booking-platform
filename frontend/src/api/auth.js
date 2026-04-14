@@ -15,7 +15,7 @@ export async function login(email, password) {
     
     const data = await response.json();
     
-    localStorage.setItem('accessToken', data.accessToken);
+    localStorage.setItem('token', data.token);
     localStorage.setItem('refreshToken', data.refreshToken);
     
     return data;
@@ -60,12 +60,13 @@ export async function logout() {
     }
   }
   
+  localStorage.removeItem('token')
   localStorage.removeItem('accessToken');
   localStorage.removeItem('refreshToken');
 }
 
 export function isAuthenticated() {
-  return !!localStorage.getItem('accessToken');
+  return !!(localStorage.getItem('accessToken') || localStorage.getItem('token'));
 }
 
 export function getToken() {
@@ -91,14 +92,14 @@ export async function refreshAccessToken() {
   }
   
   const data = await response.json();
-  localStorage.setItem('accessToken', data.accessToken);
+  localStorage.setItem('token', data.token);
   localStorage.setItem('refreshToken', data.refreshToken);
   
   return data.accessToken;
 }
 
 export async function getUserProfile() {
-  const token = getToken();
+  const token = localStorage.getItem('accessToken') || localStorage.getItem('token');
   if (!token) throw new Error('Not authenticated');
   
   const response = await fetch(`${API_URL}/auth/profile`, {
