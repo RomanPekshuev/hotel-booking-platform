@@ -1,3 +1,9 @@
+import { Router, Request, Response } from 'express';
+import { authenticateToken } from '../middleware/auth.middleware';
+import prisma from '../ws/db';
+
+const router = Router();
+
 router.get('/me', authenticateToken, async (req, res) => {
   try {
     const user = await prisma.user.findUnique({
@@ -20,3 +26,5 @@ router.get('/me', authenticateToken, async (req, res) => {
     res.status(500).json({ error: 'Failed to fetch profile' });
   }
 });
+
+export default router;

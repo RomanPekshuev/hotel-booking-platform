@@ -92,17 +92,18 @@ export async function refreshAccessToken() {
   }
   
   const data = await response.json();
-  localStorage.setItem('token', data.token);
+  const newToken = data.token || data.accessToken;
+  localStorage.setItem('token', newToken);
   localStorage.setItem('refreshToken', data.refreshToken);
   
-  return data.accessToken;
+  return newToken;
 }
 
 export async function getUserProfile() {
   const token = localStorage.getItem('accessToken') || localStorage.getItem('token');
   if (!token) throw new Error('Not authenticated');
   
-  const response = await fetch(`${API_URL}/auth/profile`, {
+  const response = await fetch(`${API_URL}/auth/me`, {
     headers: {
       'Authorization': `Bearer ${token}`,
       'Content-Type': 'application/json'

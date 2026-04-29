@@ -9,6 +9,7 @@ import type {
 } from './chatTypes'
 import type { ChatMessage } from './chatTypes'
 import { addSystemMessage, addUserMessage, getRoomHistory } from './chatService'
+import { encryptMessage, decryptMessage } from '../utils/encryptMessage'
 
 function isValidRoom(room: string): boolean {
     return room.trim().length >= 1 && room.trim().length <= 40
@@ -39,7 +40,6 @@ export function registerChatHandlers(io: Server) {
             return
           }
 
-          // Если пользователь переподключается/меняет комнату
           if (socketData.room && socketData.room !== room) {
             socket.leave(socketData.room)
           }
@@ -88,14 +88,21 @@ export function registerChatHandlers(io: Server) {
           const author = authorOverride || (socketData.isAdmin ? 'support' : socketData.nickname);
           console.log('[MESSAGE] Итоговый author:', author);
 
+          const encryptedText = encryptMessage(text);
+
           const message = addUserMessage({
             room,
             nickname: socketData.nickname,
-            text,
+            text: encryptedText,
             author,
           })
 
-          io.to(room).emit('chat:message', message satisfies ChatMessage)
+          const messageToSend = {
+            ...message,
+            text: decryptMessage(message.text)
+          };
+
+          io.to(room).emit('chat:message', messageToSend satisfies ChatMessage)
           callback({ ok: true })
         } catch (e) {
           callback({

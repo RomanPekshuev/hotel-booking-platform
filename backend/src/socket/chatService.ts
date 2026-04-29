@@ -1,16 +1,20 @@
 import { randomUUID } from 'crypto'
 import type { ChatMessage, ChatRoomName, ChatNickname } from './chatTypes'
+import { decryptMessage } from '../utils/encryptMessage'
 
 type MessagesByRoom = Map<ChatRoomName, ChatMessage[]>
 
-// In-memory хранилище. Для масштабирования в проде замените на Redis/PostgreSQL.
 const messagesByRoom: MessagesByRoom = new Map()
 
 const MAX_MESSAGES_PER_ROOM = 200
 const MAX_TEXT_LENGTH = 500
 
 export function getRoomHistory(room: ChatRoomName): ChatMessage[] {
-  return messagesByRoom.get(room) ?? []
+  const history = messagesByRoom.get(room) ?? []
+  return history.map(msg => ({
+    ...msg,
+    text: msg.kind === 'user' ? decryptMessage(msg.text) : msg.text
+  }))
 }
 
 export function addUserMessage(params: {
