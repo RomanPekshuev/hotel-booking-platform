@@ -2,7 +2,8 @@ import express, { Request, Response, NextFunction } from "express";
 import { hashPass } from "../utils/hashPass";
 import prisma from "../ws/db";
 import { comparePass } from "../utils/comparePass";
-import jwt from 'jsonwebtoken'
+import jwt from 'jsonwebtoken';
+import { authenticateToken } from "../middleware/auth.middleware";
 
 interface RegisterBody {
   username?: string;
@@ -69,9 +70,10 @@ router.post(
         data: { username, email, password: hashedPass },
       });
 
+      const token = jwt.sign({ id: newUser.id, email: newUser.email }, process.env.JWT_SECRET || 'your-secret-key', { expiresIn: '1h' });
       const { password: _, ...safeUser } = newUser;
 
-      return res.status(201).json(safeUser);
+      return res.status(201).json({ ...safeUser, token });
     } catch (e) {
       console.error("Registration error:", e);
       return res.status(500).json({ 
@@ -80,5 +82,34 @@ router.post(
     }
   }
 );
+
+router.get("/me", authenticateToken, async (req: Request, res: Response) => {
+  try {
+    const userId = (req as any).user?.id;
+    
+    if (!userId) {
+      return res.status(401).json({ error: "Unauthorized" });
+    }
+
+    const user = await prisma.user.findUnique({
+      where: { id: userId },
+      select: {
+        id: true,
+        username: true,
+        email: true,
+        createdAt: true
+      }
+    });
+    
+    if (!user) {
+      return res.status(404).json({ error: "User not found" });
+    }
+    
+    res.json(user);
+  } catch (error) {
+    console.error("Get profile error:", error);
+    res.status(500).json({ error: "Failed to fetch profile" });
+  }
+});
 
 export default router;

@@ -57,9 +57,9 @@ export default function MyProfile() {
       cancelled: 'status-cancelled'
     };
     const labels = {
-      confirmed: '✅ Confirmed',
-      pending: '⏳ Pending',
-      cancelled: '❌ Cancelled'
+      confirmed: 'Confirmed',
+      pending: 'Pending',
+      cancelled: 'Cancelled'
     };
     return <span className={`status-badge ${styles[status]}`}>{labels[status]}</span>;
   }
@@ -161,7 +161,7 @@ export default function MyProfile() {
         {activeTab === 'info' && (
           <div className="account-info">
             <div className="info-card">
-              <h3>👤 Personal Information</h3>
+              <h3>Personal Information</h3>
               <div className="info-row">
                 <label>Username</label>
                 <p>{user?.username}</p>
