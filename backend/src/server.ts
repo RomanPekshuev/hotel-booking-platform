@@ -2,12 +2,12 @@ import express, { type Request, type Response } from "express";
 import cors from "cors";
 import { createServer } from "http";
 import { Server } from "socket.io"; 
-import authRouter from "../api/auth";
-import hotelsRouter from "../api/hotels";
-import bookingsRouter from "../api/bookings";
-import { registerChatHandlers } from "../socket/chatSockets";
-import { authenticateSocket } from "../middleware/socket-auth.middleware";
-import reviewsRouter from '../api/reviews';
+import authRouter from "./api/auth";
+import hotelsRouter from "./api/hotels";
+import bookingsRouter from "./api/bookings";
+import { registerChatHandlers } from "./socket/chatSockets";
+import { authenticateSocket } from "./middleware/socket-auth.middleware";
+import reviewsRouter from './api/reviews';
 import 'dotenv/config';
 
 const app = express();

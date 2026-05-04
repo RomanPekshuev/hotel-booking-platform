@@ -1,14 +1,17 @@
 import { Router, Request, Response } from "express";
 import { PrismaClient } from "@prisma/client";
-import { authenticateToken } from "../middleware/auth";
+import { authenticateUser, type AuthRequest } from '../middleware/authenticateUser';
 
 const router = Router();
 const prisma = new PrismaClient();
 
-router.get("/my", authenticateToken, async (req: Request, res: Response) => {
+router.get("/my", authenticateUser, async (req: AuthRequest, res: Response) => {
   try {
-    // @ts-ignore - userId добавляется middleware authenticateToken
     const userId = req.user?.id;
+    
+    if (!userId) {
+      return res.status(401).json({ error: "Unauthorized" });
+    }
     
     const bookings = await prisma.booking.findMany({
       where: { userId },
@@ -20,15 +23,24 @@ router.get("/my", authenticateToken, async (req: Request, res: Response) => {
     
     res.json(bookings);
   } catch (error) {
+    console.error("Fetch bookings error:", error);
     res.status(500).json({ error: "Failed to fetch bookings" });
   }
 });
 
-router.post("/", authenticateToken, async (req: Request, res: Response) => {
+router.post("/", authenticateUser, async (req: AuthRequest, res: Response) => {
   try {
-    // @ts-ignore
     const userId = req.user?.id;
+    
+    if (!userId) {
+      return res.status(401).json({ error: "Unauthorized" });
+    }
+    
     const { roomId, checkIn, checkOut } = req.body;
+    
+    if (!roomId || !checkIn || !checkOut) {
+      return res.status(400).json({ error: "Missing required fields" });
+    }
     
     const room = await prisma.room.findUnique({
       where: { id: Number(roomId) }
@@ -39,7 +51,7 @@ router.post("/", authenticateToken, async (req: Request, res: Response) => {
     }
     
     const booking = await prisma.booking.create({
-       data: {
+      data: {
         userId,
         roomId: Number(roomId),
         checkIn: new Date(checkIn),
@@ -50,14 +62,19 @@ router.post("/", authenticateToken, async (req: Request, res: Response) => {
     
     res.status(201).json(booking);
   } catch (error) {
+    console.error("Create booking error:", error);
     res.status(500).json({ error: "Failed to create booking" });
   }
 });
 
-router.delete("/:id", authenticateToken, async (req: Request, res: Response) => {
+router.delete("/:id", authenticateUser, async (req: AuthRequest, res: Response) => {
   try {
-    // @ts-ignore
     const userId = req.user?.id;
+    
+    if (!userId) {
+      return res.status(401).json({ error: "Unauthorized" });
+    }
+    
     const { id } = req.params;
     
     const booking = await prisma.booking.findUnique({
@@ -74,6 +91,7 @@ router.delete("/:id", authenticateToken, async (req: Request, res: Response) => 
     
     res.json({ message: "Booking cancelled" });
   } catch (error) {
+    console.error("Cancel booking error:", error);
     res.status(500).json({ error: "Failed to cancel booking" });
   }
 });

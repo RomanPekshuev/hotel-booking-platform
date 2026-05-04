@@ -1,4 +1,5 @@
 import type { Server, Socket } from 'socket.io'
+import { randomUUID } from 'crypto'
 import { DEFAULT_ROOM } from './chatTypes'
 import type {
     ChatJoinAck,
@@ -6,10 +7,78 @@ import type {
     ChatSendAck,
     ChatSendPayload,
     SocketChatData,
+    ChatMessage,
+    ChatRoomName,
+    ChatNickname,
 } from './chatTypes'
-import type { ChatMessage } from './chatTypes'
-import { addSystemMessage, addUserMessage, getRoomHistory } from './chatService'
 import { encryptMessage, decryptMessage } from '../utils/encryptMessage'
+
+// === ФУНКЦИИ ИЗ БЫВШЕГО chatService.ts ===
+type MessagesByRoom = Map<ChatRoomName, ChatMessage[]>
+const messagesByRoom: MessagesByRoom = new Map()
+const MAX_MESSAGES_PER_ROOM = 200
+const MAX_TEXT_LENGTH = 500
+
+function normalizeText(text: string): string {
+  return text.trim().replace(/\s+/g, ' ')
+}
+
+function storeMessage(message: ChatMessage) {
+  const current = messagesByRoom.get(message.room) ?? []
+  current.push(message)
+  if (current.length > MAX_MESSAGES_PER_ROOM) {
+    current.splice(0, current.length - MAX_MESSAGES_PER_ROOM)
+  }
+  messagesByRoom.set(message.room, current)
+}
+
+export function getRoomHistory(room: ChatRoomName): ChatMessage[] {
+  const history = messagesByRoom.get(room) ?? []
+  return history.map(msg => ({
+    ...msg,
+    text: msg.kind === 'user' ? decryptMessage(msg.text) : msg.text
+  }))
+}
+
+export function addUserMessage(params: {
+  room: ChatRoomName
+  nickname: ChatNickname
+  text: string
+  author?: string
+}): ChatMessage {
+  const text = normalizeText(params.text)
+  if (!text) throw new Error('Сообщение не может быть пустым')
+  if (text.length > MAX_TEXT_LENGTH) throw new Error('Сообщение слишком длинное')
+
+  const message: ChatMessage = {
+    kind: 'user',
+    id: randomUUID(),
+    room: params.room,
+    author: params.author ?? params.nickname,
+    text,
+    createdAt: Date.now(),
+  }
+  storeMessage(message)
+  return message
+}
+
+export function addSystemMessage(params: {
+  room: ChatRoomName
+  text: string
+}): ChatMessage {
+  const text = normalizeText(params.text)
+  const message: ChatMessage = {
+    kind: 'system',
+    id: randomUUID(),
+    room: params.room,
+    author: 'system',
+    text,
+    createdAt: Date.now(),
+  }
+  storeMessage(message)
+  return message
+}
+// === КОНЕЦ ФУНКЦИЙ ИЗ chatService.ts ===
 
 function isValidRoom(room: string): boolean {
     return room.trim().length >= 1 && room.trim().length <= 40

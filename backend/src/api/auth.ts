@@ -1,9 +1,9 @@
-import express, { Request, Response, NextFunction } from "express";
+import express, { Request, Response, } from "express";
 import { hashPass } from "../utils/hashPass";
-import prisma from "../ws/db";
+import prisma from "../db";
 import { comparePass } from "../utils/comparePass";
 import jwt from 'jsonwebtoken';
-import { authenticateToken } from "../middleware/auth.middleware";
+import { authenticateUser, type AuthRequest } from '../middleware/authenticateUser';
 
 interface RegisterBody {
   username?: string;
@@ -54,7 +54,7 @@ router.post(
       if (!username || !email || !password) {
         return res.status(400).json({ 
           error: "Username, email and password are required" 
-        });
+        });  // ← ИСПРАВЛЕНО: добавили }
       }
 
       const existingUser = await prisma.user.findFirst({
@@ -83,9 +83,9 @@ router.post(
   }
 );
 
-router.get("/me", authenticateToken, async (req: Request, res: Response) => {
+router.get("/me", authenticateUser, async (req: AuthRequest, res: Response) => {
   try {
-    const userId = (req as any).user?.id;
+    const userId = req.user?.id;
     
     if (!userId) {
       return res.status(401).json({ error: "Unauthorized" });
